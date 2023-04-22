@@ -1,0 +1,5 @@
+charts/web-ui/frontend
+charts/rest-api/backend
+.git
+.vscode
+.gitlab-ci.yml

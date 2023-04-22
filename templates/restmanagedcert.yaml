@@ -1,0 +1,7 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: rest-api-managed-cert
+spec:
+  domains:
+    - rest-api.jose-balanza.com

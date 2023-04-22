@@ -1,0 +1,28 @@
+{{ $name := include "web-ui.name" . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}-deployment
+  labels: {{ include "web-ui.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels: {{ include "web-ui.selectorLabels" . | nindent 6 }}
+  replicas: {{ .Values.replicaCount | default 3 }} 
+  template:
+    metadata:
+      labels: {{ include "web-ui.selectorLabels" . | nindent 8 }} 
+        access: web-ui
+    spec:
+      containers:
+        - name: {{ $name }}-container
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - containerPort: {{ .Values.port | default 3000 }}
+          envFrom:
+            - configMapRef:
+                name: {{$name}}-config
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+        
+
+

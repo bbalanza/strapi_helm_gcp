@@ -1,0 +1,42 @@
+{{- $applicationName := .Values.global.applicationName -}}
+{{- $name := include "persistent-layer.name" . -}}
+{{- $selectorLabels := include "persistent-layer.selectorLabels" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}-deployment
+spec:
+  replicas: {{ .Values.deployment.replicaCount }}
+  selector:
+    matchLabels: {{ $selectorLabels | nindent 6 }}
+  template:
+    metadata:
+      labels: {{ $selectorLabels | nindent 8 }}
+        access: persistent-layer
+    spec:
+      containers:
+        - name: "{{ $name }}-container"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}" 
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent"}}
+          ports:
+            - containerPort: {{ .Values.port | default 5432}}
+          envFrom:
+            - configMapRef:
+                name: {{ $applicationName }}-config
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $applicationName }}-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - mountPath: {{ .Values.deployment.mountPath | default "/var/lib/postgresql/data" }}  
+              name: {{ $name }}-volume
+              subPath: postgres
+      volumes:
+        - name: {{ $name }}-volume
+          persistentVolumeClaim:
+            claimName: {{ $name }}-pv-claim
+
+            
+          

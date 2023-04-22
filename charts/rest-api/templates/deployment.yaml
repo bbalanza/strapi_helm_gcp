@@ -1,0 +1,31 @@
+{{ $name := include "rest-api.name" . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: {{ $name | printf "%s-deployment" }}
+  labels: {{ include "rest-api.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels: {{ include "rest-api.selectorLabels" . | nindent 6 }}
+  replicas: {{ default 1 .Values.replicaCount | int }}
+  template:
+    metadata:
+      labels: {{ include "rest-api.selectorLabels" . | nindent 8 }}
+        access: rest-api
+    spec:
+      containers:
+        - name: {{ $name }}-container
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: {{ .Values.port | int }}
+          envFrom:
+            - configMapRef:
+                name: {{ $name }}-config
+            - configMapRef:
+                name: {{ .Values.global.applicationName }}-config
+            - secretRef:
+                name: {{ .Values.global.applicationName }}-secret
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+
+            

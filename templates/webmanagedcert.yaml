@@ -1,0 +1,7 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: web-ui-managed-cert
+spec:
+  domains:
+    - web-ui.jose-balanza.com

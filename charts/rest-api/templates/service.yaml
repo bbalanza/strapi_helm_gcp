@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rest-api.name" . | printf "%s-service" }}
+  labels: {{ include "rest-api.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  {{- if .Values.service.clusterIPNone }}
+  clusterIP: None
+  {{- end}}
+  selector: {{ include "rest-api.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: {{ .Values.port | default 8000}}
+      name: {{ include "rest-api.name" . | printf "%s-port" }}
+      {{- if ne .Values.service.type "ClusterIP" }}
+      targetPort: {{ .Values.service.targetPort | default .Values.port 8000}}
+      {{- if .Values.service.nodePort }}
+      nodePort: {{ .Values.service.nodePort | default 30007}}
+      {{- end }}
+      {{- end }}

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{printf "%s-pv-claim" (include "persistent-layer.name" .)}}
+  labels: {{ include "persistent-layer.labels" . | nindent 4}}
+spec:
+  accessModes: 
+  {{- if .Values.persistentVolume.accessModes }}
+  {{- range .Values.persistentVolume.accessModes }}
+    - {{ . }}
+  {{- end }}
+  {{- else }}
+  {{ print "- ReadWriteOnce" }}
+  {{- end }}
+  resources:
+    requests: 
+      storage: {{ .Values.persistentVolume.storageRequest }}

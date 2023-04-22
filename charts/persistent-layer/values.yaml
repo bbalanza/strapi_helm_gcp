@@ -1,0 +1,27 @@
+# Default values for persistent-layer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: {}
+
+image:
+  repository: postgres
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "alpine"
+
+port: 5432
+
+deployment:
+  replicaCount: 1
+  mountPath: /var/lib/postgresql/data 
+
+service:
+  type: ClusterIP
+  nodePort: 3001
+
+persistentVolume:
+  storage: 5Gi
+  storageRequest: 5Gi
+  accessModes:
+    - ReadWriteOnce

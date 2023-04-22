@@ -1,0 +1,8 @@
+FROM node:16-alpine as build-container
+WORKDIR /app
+COPY ./package*.json .
+RUN yarn install
+COPY ./ ./
+ENV NEXT_PUBLIC_STRAPI_API_URL=https://rest-api.jose-balanza.com
+RUN yarn build 
+CMD ["yarn", "start"]

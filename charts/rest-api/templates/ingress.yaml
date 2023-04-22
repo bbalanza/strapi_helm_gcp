@@ -1,0 +1,17 @@
+{{ $name := include "rest-api.name" . }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ printf "%s-ingress" $name }}
+  annotations:
+    networking.gke.io/v1beta1.FrontendConfig: {{ printf "%s-frontend-config" .Values.global.applicationName }}
+    kubernetes.io/ingress.global-static-ip-name: {{ $name }}
+    networking.gke.io/managed-certificates: {{ printf "%s-managed-cert" $name }}
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.allow-http: "true"
+spec:
+  defaultBackend:
+    service:
+      name: {{ printf "%s-service" $name }}
+      port:
+        number: {{ .Values.port | default 8000 }}

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-config" (include "rest-api.name" . )}}
+  labels: {{ include "rest-api.labels" . | nindent 4 }}
+data: 
+  POSTGRES_HOST: persistent-layer-service
+{{- (.Files.Glob "config/env/*" ).AsConfig | nindent 2 }}
+  
